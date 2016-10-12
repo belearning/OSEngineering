@@ -20,7 +20,8 @@ struct cmd {
 struct cmdLink{
   struct cmd* cmd;
   struct cmdLink* next;
-}
+}:
+
 struct execcmd {
   int type;              // ' '
   char *argv[MAXARGS];   // arguments to the command to be exec-ed
