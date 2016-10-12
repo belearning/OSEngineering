@@ -232,6 +232,7 @@ gettoken(char **ps, char *es, char **q, char **eq)
   case 0:
     break;
   case '|':
+  case ';';
   case '<':
     s++;
     break;
