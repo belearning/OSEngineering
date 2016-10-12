@@ -66,6 +66,9 @@ runcmd(struct cmd *cmd)
       exit(0);
     fprintf(stderr, "exec not implemented\n");
     // Your code here ...
+    if ( -1 == execv(ecmd->argv[0], ecmd->argv)){
+      fprintf(stderr , "not found!\n");
+    }
     break;
 
   case '>':
@@ -73,6 +76,8 @@ runcmd(struct cmd *cmd)
     rcmd = (struct redircmd*)cmd;
     fprintf(stderr, "redir not implemented\n");
     // Your code here ...
+    close(rcmd->fd);
+    open(rcmd->file , rcmd->mode, S_IRWXU);
     runcmd(rcmd->cmd);
     break;
 
@@ -80,6 +85,21 @@ runcmd(struct cmd *cmd)
     pcmd = (struct pipecmd*)cmd;
     fprintf(stderr, "pipe not implemented\n");
     // Your code here ...
+    int p[2];
+    pipe(p);
+    if( fork() == 0) {
+      close(0);
+      dup(p[0]);
+      close(p[0]);
+      close(p[1]);
+      runcmd(pcmd->right);
+    } else {
+      close(1);
+      dup(p[1]);
+      runcmd(pcmd->left);
+      close(p[0]);
+      close(p[1]);
+    }
     break;
   }    
   exit(0);
@@ -135,14 +155,14 @@ fork1(void)
 struct cmdLink *
 linkcmd(struct cmd * subcmd)
 {
-	struct cmdLink *cmdlink;
+  struct cmdLink *cmdlink;
 	
-	cmdlink = malloc(sizeof(*cmdlink));
-	memset(cmd, 0, sizeof(*cmdlink));
-	cmdlink->now = subcmd;
-	cmdlink-next = NULL;
+  cmdlink = malloc(sizeof(*cmdlink));
+  memset(cmd, 0, sizeof(*cmdlink));
+  cmdlink->now = subcmd;
+  cmdlink-next = NULL;
 	
-	return cmdlink;
+  return cmdlink;
 }
 
 struct cmd*
