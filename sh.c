@@ -17,6 +17,10 @@ struct cmd {
   int type;          //  ' ' (exec), | (pipe), '<' or '>' for redirection
 };
 
+struct cmdLink{
+  struct cmd* cmd;
+  struct cmdLink* next;
+}
 struct execcmd {
   int type;              // ' '
   char *argv[MAXARGS];   // arguments to the command to be exec-ed
@@ -126,6 +130,19 @@ fork1(void)
   if(pid == -1)
     perror("fork");
   return pid;
+}
+
+struct cmdLink *
+linkcmd(struct cmd * subcmd)
+{
+	struct cmdLink *cmdlink;
+	
+	cmdlink = malloc(sizeof(*cmdlink));
+	memset(cmd, 0, sizeof(*cmdlink));
+	cmdlink->now = subcmd;
+	cmdlink-next = NULL;
+	
+	return cmdlink;
 }
 
 struct cmd*
@@ -238,20 +255,31 @@ char
   return c;
 }
 
-struct cmd*
+struct cmdLink*
 parsecmd(char *s)
 {
   char *es;
+  struct cmdLink *Head;
+  struct cmdLink *temp;
   struct cmd *cmd;
 
   es = s + strlen(s);
   cmd = parseline(&s, es);
+  Head = linkcmd(cmd);
+  temp = Head;
+
+  while(peek(ps, es, ";")){
+	gettoken(ps, es, 0, 0);
+	cmd = parseline(ps, es);
+	temp->next = linkcmd(cmd);
+	temp = temp->next;
+  }
   peek(&s, es, "");
   if(s != es){
     fprintf(stderr, "leftovers: %s\n", s);
     exit(-1);
   }
-  return cmd;
+  return Head;
 }
 
 struct cmd*
@@ -259,6 +287,7 @@ parseline(char **ps, char *es)
 {
   struct cmd *cmd;
   cmd = parsepipe(ps, es);
+
   return cmd;
 }
 
@@ -312,7 +341,7 @@ parseexec(char **ps, char *es)
 
   argc = 0;
   ret = parseredirs(ret, ps, es);
-  while(!peek(ps, es, "|")){
+  while(!peek(ps, es, "|;")){
     if((tok=gettoken(ps, es, &q, &eq)) == 0)
       break;
     if(tok != 'a') {
