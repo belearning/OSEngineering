@@ -135,8 +135,14 @@ main(void)
         fprintf(stderr, "cannot cd %s\n", buf+3);
       continue;
     }
-    if(fork1() == 0)
-      runcmd(parsecmd(buf));
+    if(fork1() == 0){
+      struct cmdLink *Head = parsecmd(buf);
+      runcmd(Head->cmd);
+      while(Head->next!=NULL){
+        runcmd(Head->cmd);
+        Head = Head->next;		
+      }	
+    }
     wait(&r);
   }
   exit(0);
@@ -160,7 +166,7 @@ linkcmd(struct cmd * subcmd)
 	
   cmdlink = malloc(sizeof(*cmdlink));
   memset(cmdlink, 0, sizeof(*cmdlink));
-  cmdlink->now = subcmd;
+  cmdlink->cmd = subcmd;
   cmdlink->next = NULL;
 	
   return cmdlink;
@@ -289,9 +295,9 @@ parsecmd(char *s)
   Head = linkcmd(cmd);
   temp = Head;
 
-  while(peek(s, es, ";")){
-	gettoken(s, es, 0, 0);
-	cmd = parseline(s, es);
+  while(peek(&s, es, ";")){
+	gettoken(&s, es, 0, 0);
+	cmd = parseline(&s, es);
 	temp->next = linkcmd(cmd);
 	temp = temp->next;
   }
