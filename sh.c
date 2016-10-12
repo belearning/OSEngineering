@@ -137,8 +137,8 @@ main(void)
     }
     if(fork1() == 0){
       struct cmdLink *Head = parsecmd(buf);
-      runcmd(Head->cmd);
-      while(Head->next!=NULL){
+     
+      while(Head != NULL){
         runcmd(Head->cmd);
         Head = Head->next;		
       }	
