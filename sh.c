@@ -42,7 +42,7 @@ struct pipecmd {
 };
 
 int fork1(void);  // Fork but exits on failure.
-struct cmd *parsecmd(char*);
+struct cmdLink *parsecmd(char*);
 
 // Execute cmd.  Never returns.
 void
@@ -159,9 +159,9 @@ linkcmd(struct cmd * subcmd)
   struct cmdLink *cmdlink;
 	
   cmdlink = malloc(sizeof(*cmdlink));
-  memset(cmd, 0, sizeof(*cmdlink));
+  memset(cmdlink, 0, sizeof(*cmdlink));
   cmdlink->now = subcmd;
-  cmdlink-next = NULL;
+  cmdlink->next = NULL;
 	
   return cmdlink;
 }
@@ -289,9 +289,9 @@ parsecmd(char *s)
   Head = linkcmd(cmd);
   temp = Head;
 
-  while(peek(ps, es, ";")){
-	gettoken(ps, es, 0, 0);
-	cmd = parseline(ps, es);
+  while(peek(s, es, ";")){
+	gettoken(s, es, 0, 0);
+	cmd = parseline(s, es);
 	temp->next = linkcmd(cmd);
 	temp = temp->next;
   }
