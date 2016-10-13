@@ -133,13 +133,14 @@ main(void)
       continue;
     }
     if(fork1() == 0){
-      struct cmdLink *Head = parsecmd(buf);
+     // struct cmdLink *Head = parsecmd(buf);
      
-      while(Head != NULL){
+     /*Z while(Head != NULL){
         printf("Another execution\n");
         runcmd(Head->cmd);
         Head = Head->next;		
-      }	
+      }	*/
+      parsecmd(buf);
     }
     wait(&r);
   }
@@ -293,15 +294,16 @@ parsecmd(char *s)
 
   es = s + strlen(s);
   cmd = parseline(&s, es);
-  Head = linkcmd(cmd);
-  temp = Head;
-
+ // Head = linkcmd(cmd);
+ // temp = Head;
+  runcmd(cmd);
   while(peek(&s, es, ";")){
     printf("another cmd\n");
     gettoken(&s, es, 0, 0);
     cmd = parseline(&s, es);
-    temp->next = linkcmd(cmd);
-    temp = temp->next;
+    runcmd(cmd);
+    //temp->next = linkcmd(cmd);
+    //temp = temp->next;
   }
   peek(&s, es, "");
   if(s != es){
