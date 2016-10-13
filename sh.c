@@ -64,8 +64,10 @@ runcmd(struct cmd *cmd)
   case ' ':
     ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
+      ;
      // exit(0);
     // Your code here ...
+    printf("exec\n");
     if ( -1 == execv(ecmd->argv[0], ecmd->argv)){
       fprintf(stderr , "not found!\n");
     }
