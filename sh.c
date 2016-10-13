@@ -64,7 +64,7 @@ runcmd(struct cmd *cmd)
   case ' ':
     ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
-      exit(0);
+     // exit(0);
     // Your code here ...
     if ( -1 == execv(ecmd->argv[0], ecmd->argv)){
       fprintf(stderr , "not found!\n");
@@ -134,7 +134,6 @@ main(void)
     }
     if(fork1() == 0){
       struct cmdLink *Head = parsecmd(buf);
-      Head = Head->next;
       while(Head != NULL){
         printf("Another execution\n");
         runcmd(Head->cmd);
