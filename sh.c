@@ -100,7 +100,7 @@ runcmd(struct cmd *cmd)
     }
     break;
   }    
-  exit(0);
+  //exit(0);
 }
 
 int
