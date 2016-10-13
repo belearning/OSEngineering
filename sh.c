@@ -136,6 +136,7 @@ main(void)
       struct cmdLink *Head = parsecmd(buf);
      
       while(Head != NULL){
+        printf("Another execution\n");
         runcmd(Head->cmd);
         Head = Head->next;		
       }	
