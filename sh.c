@@ -65,7 +65,6 @@ runcmd(struct cmd *cmd)
     ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
       exit(0);
-    fprintf(stderr, "exec not implemented\n");
     // Your code here ...
     if ( -1 == execv(ecmd->argv[0], ecmd->argv)){
       fprintf(stderr , "not found!\n");
@@ -75,7 +74,6 @@ runcmd(struct cmd *cmd)
   case '>':
   case '<':
     rcmd = (struct redircmd*)cmd;
-    fprintf(stderr, "redir not implemented\n");
     // Your code here ...
     close(rcmd->fd);
     open(rcmd->file , rcmd->mode, S_IRWXU);
@@ -231,8 +229,10 @@ gettoken(char **ps, char *es, char **q, char **eq)
   switch(*s){
   case 0:
     break;
-  case '|':
   case ';':
+    s++;
+    break;
+  case '|':
   case '<':
     s++;
     break;
