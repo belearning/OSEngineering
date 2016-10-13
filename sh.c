@@ -82,7 +82,6 @@ runcmd(struct cmd *cmd)
 
   case '|':
     pcmd = (struct pipecmd*)cmd;
-    fprintf(stderr, "pipe not implemented\n");
     // Your code here ...
     int p[2];
     pipe(p);
@@ -297,10 +296,11 @@ parsecmd(char *s)
   temp = Head;
 
   while(peek(&s, es, ";")){
-	gettoken(&s, es, 0, 0);
-	cmd = parseline(&s, es);
-	temp->next = linkcmd(cmd);
-	temp = temp->next;
+    printf("another cmd\n");
+    gettoken(&s, es, 0, 0);
+    cmd = parseline(&s, es);
+    temp->next = linkcmd(cmd);
+    temp = temp->next;
   }
   peek(&s, es, "");
   if(s != es){
