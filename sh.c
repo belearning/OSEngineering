@@ -66,7 +66,7 @@ runcmd(struct cmd *cmd)
     if(ecmd->argv[0] == 0)
       exit(0);
     // Your code here ...
-    printf("exec\n");
+    printf("exec %s\n", ecmd->argv[0]);
     if ( -1 == execv(ecmd->argv[0], ecmd->argv)){
       fprintf(stderr , "not found!\n");
     }
@@ -142,7 +142,7 @@ main(void)
         Head = Head->next;		
       }
      // parsecmd(buf);
-    }
+  //  }
     wait(&r);
   }
   exit(0);
