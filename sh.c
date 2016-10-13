@@ -64,8 +64,7 @@ runcmd(struct cmd *cmd)
   case ' ':
     ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
-      ;
-     // exit(0);
+      exit(0);
     // Your code here ...
     printf("exec\n");
     if ( -1 == execv(ecmd->argv[0], ecmd->argv)){
@@ -102,7 +101,7 @@ runcmd(struct cmd *cmd)
     }
     break;
   }    
-  //exit(0);
+  exit(0);
 }
 
 int
@@ -134,14 +133,15 @@ main(void)
         fprintf(stderr, "cannot cd %s\n", buf+3);
       continue;
     }
-    if(fork1() == 0){
+   // if(fork1() == 0){
       struct cmdLink *Head = parsecmd(buf);
       while(Head != NULL){
         printf("Another execution\n");
+        if(fork1() ==0)
         runcmd(Head->cmd);
         Head = Head->next;		
       }
-      parsecmd(buf);
+     // parsecmd(buf);
     }
     wait(&r);
   }
