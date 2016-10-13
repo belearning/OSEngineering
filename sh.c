@@ -296,7 +296,7 @@ parsecmd(char *s)
   cmd = parseline(&s, es);
  // Head = linkcmd(cmd);
  // temp = Head;
-  runcmd(cmd);
+ // runcmd(cmd);
   while(peek(&s, es, ";")){
     printf("another cmd\n");
     gettoken(&s, es, 0, 0);
