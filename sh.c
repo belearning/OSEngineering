@@ -64,7 +64,7 @@ catstr(char * str1, char * str2)
 
   p = malloc(l);
   memcpy(p, str1, l1);
-  p[l1+1] = '/';
+  p[l1] = '/';
   memcpy(p+l1+2,str2,l2+1);
   return p;  
 }
