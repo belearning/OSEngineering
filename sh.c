@@ -91,11 +91,11 @@ runcmd(struct cmd *cmd)
     if(ecmd->argv[0] == 0)
       exit(0);
     // Your code here ...
-    printf("exec %s\n", ecmd->argv[0]);
  
   for( i=0; i<execpath.num; i++){
     path = catstr( execpath.path[i] , ecmd->argv[0]);
-
+    printf("exec %s\n", path);
+    
     if( sign = execv( path, ecmd->argv))
       break;
   }
@@ -338,6 +338,7 @@ void parsepath()
   
   while( path < es ){
     gettoken(&path, es, &q, &eq);
+    path ++;
     execpath.path[execpath.num] = mkcopy(q, eq);
     execpath.num ++; 
   }
