@@ -60,12 +60,12 @@ catstr(char * str1, char * str2)
 
   l1 = strlen( str1 );
   l2 = strlen( str2 );
-  l = l1 + l2;
+  l = l1 + l2 +1;
 
   p = malloc(l);
-  memcpy(p, str1, l1-1);
-  p[l1-1] = '/';
-  memcpy(p+l1,str2,l2);
+  memcpy(p, str1, l1);
+  p[l1] = '/';
+  memcpy(p+l1+1,str2,l2);
   return p;  
 }
 
