@@ -96,7 +96,7 @@ runcmd(struct cmd *cmd)
     path = catstr( execpath.path[i] , ecmd->argv[0]);
     printf("exec %s\n", path);
     
-    if( sign = execv( path, ecmd->argv))
+    if( sign = execv( path, ecmd->argv)!=-1)
       break;
   }
   
