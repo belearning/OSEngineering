@@ -324,10 +324,12 @@ char
 
 void parsepath()
 {
-  char *path = getenv("PATH");
   char *es;
   char *q;
   char * eq;
+ 
+  char *path = getenv("PATH");
+  printf("Value is %s\n", path);
   if ( NULL == path) 
     exit(-1);
   
