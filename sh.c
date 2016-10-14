@@ -335,7 +335,7 @@ void parsepath()
   es = path + strlen(path);
   
   while( path < es ){
-    gettoken(&path, es, q, eq);
+    gettoken(&path, es, &q, &eq);
     execpath.path[execpath.num] = mkcopy(q, eq);
     execpath.num ++; 
   }
