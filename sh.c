@@ -10,9 +10,14 @@
 // Simplifed xv6 shell.
 
 #define MAXARGS 10
-
+#define MAXPATHS 20
 // All commands have at least a type. Have looked at the type, the code
 // typically casts the *cmd to some specific cmd type.
+struct execpath{
+  char *path[MAXPATHS];
+  int  num;
+};
+
 struct cmd {
   int type;          //  ' ' (exec), | (pipe), '<' or '>' for redirection
 };
@@ -43,15 +48,35 @@ struct pipecmd {
 
 int fork1(void);  // Fork but exits on failure.
 struct cmdLink *parsecmd(char*);
-
+void parsepath();
+struct execpath execpath;
 // Execute cmd.  Never returns.
+
+char *
+catstr(char * str1, char * str2)
+{
+  int l,l1,l2;
+  char *p;
+
+  l1 = strlen( str1 );
+  l2 = strlen( str2 );
+  l = l1 + l2 + 2;
+
+  p = malloc(l);
+  memcpy(p, str1, l1);
+  p[l1+1] = '/';
+  memcpy(p+l1+2,str2,l2+1);
+  return p;  
+}
+
 void
 runcmd(struct cmd *cmd)
 {
-  int p[2], r;
+  int p[2], r, i, len, sign;
   struct execcmd *ecmd;
   struct pipecmd *pcmd;
   struct redircmd *rcmd;
+  char *path;
 
   if(cmd == 0)
     exit(0);
@@ -67,10 +92,17 @@ runcmd(struct cmd *cmd)
       exit(0);
     // Your code here ...
     printf("exec %s\n", ecmd->argv[0]);
-    if ( -1 == execv(ecmd->argv[0], ecmd->argv)){
-      fprintf(stderr , "not found!\n");
-    }
-    break;
+ 
+  for( i=0; i<execpath.num; i++){
+    path = catstr( execpath.path[i] , ecmd->argv[0]);
+
+    if( sign = execv( path, ecmd->argv))
+      break;
+  }
+  
+  if ( -1==sign)
+    fprintf(stderr, "unknow cmd\n");
+  break;
 
   case '>':
   case '<':
@@ -117,12 +149,14 @@ getcmd(char *buf, int nbuf)
   return 0;
 }
 
+
 int
 main(void)
 {
   static char buf[100];
   int fd, r;
 
+  parsepath();
   // Read and run input commands.
   while(getcmd(buf, sizeof(buf)) >= 0){
     if(buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' '){
@@ -138,7 +172,7 @@ main(void)
       while(Head != NULL){
         printf("Another execution\n");
         if(fork1() ==0)
-        runcmd(Head->cmd);
+          runcmd(Head->cmd);
         Head = Head->next;		
       }
      // parsecmd(buf);
@@ -214,7 +248,7 @@ pipecmd(struct cmd *left, struct cmd *right)
 // Parsing
 
 char whitespace[] = " \t\r\n\v";
-char symbols[] = "<|>;";
+char symbols[] = "<|>;:";
 
 int
 gettoken(char **ps, char *es, char **q, char **eq)
@@ -230,6 +264,9 @@ gettoken(char **ps, char *es, char **q, char **eq)
   ret = *s;
   switch(*s){
   case 0:
+    break;
+  case ':':
+    s++;
     break;
   case ';':
     s++;
@@ -283,6 +320,25 @@ char
   strncpy(c, s, n);
   c[n] = 0;
   return c;
+}
+
+void parsepath()
+{
+  char *path = getenv("PATH");
+  char *es;
+  char *q;
+  char * eq;
+  if ( NULL == path) 
+    exit(-1);
+  
+  execpath.num = 0;
+  es = path + strlen(path);
+  
+  while( path < es ){
+    gettoken(&path, es, q, eq);
+    execpath.path[execpath.num] = mkcopy(q, eq);
+    execpath.num ++; 
+  }
 }
 
 struct cmdLink*
